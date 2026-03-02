@@ -1,0 +1,257 @@
+==========================================================================================  
+
+import React, { useState, useEffect } from "react";
+
+export default function GetAPI() {
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const fetchData = async () => {
+
+    setLoading(true);
+    setError("");
+
+    try {
+
+      const res = await fetch(
+        "https://jsonplaceholder.typicode.com/posts"
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const result = await res.json();
+
+      setData(result);
+
+    } catch (err) {
+
+      setError(err.message);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+
+      {loading && <p>Loading...</p>}
+
+      {error && <p>{error}</p>}
+
+      {data.map(post => (
+        <p key={post.id}>{post.title}</p>
+      ))}
+
+    </div>
+  );
+
+}    
+
+==========================================================================================   2. POST API Request (Create Data)
+
+
+
+const createPost = async () => {
+
+  try {
+
+    const res = await fetch(
+      "https://jsonplaceholder.typicode.com/posts",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          title: "New Post",
+          body: "Post body"
+        })
+
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to create post");
+    }
+
+    const data = await res.json();
+
+    console.log("Created:", data);
+
+  } catch (error) {
+
+    console.log("Error:", error.message);
+
+  }
+
+};
+
+========================================   PUT API Request (Update Full Data)
+
+
+const updatePost = async () => {
+
+  try {
+
+    const res = await fetch(
+      "https://jsonplaceholder.typicode.com/posts/1",
+      {
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          id: 1,
+          title: "Updated Title",
+          body: "Updated Body"
+        })
+
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Update failed");
+    }
+
+    const data = await res.json();
+
+    console.log(data);
+
+  } catch (error) {
+
+    console.log(error.message);
+
+  }
+
+};
+
+
+==================================================================     4. PATCH API Request (Update Partial Data)   
+
+
+
+const patchPost = async () => {
+
+  try {
+
+    const res = await fetch(
+      "https://jsonplaceholder.typicode.com/posts/1",
+      {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          title: "Patched Title"
+        })
+
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Patch failed");
+    }
+
+    const data = await res.json();
+
+    console.log(data);
+
+  } catch (error) {
+
+    console.log(error.message);
+
+  }
+
+};
+
+=============================================================================================      5. DELETE API Request  
+
+
+
+const deletePost = async () => {
+
+  try {
+
+    const res = await fetch(
+      "https://jsonplaceholder.typicode.com/posts/1",
+      {
+        method: "DELETE"
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Delete failed");
+    }
+
+    console.log("Deleted successfully");
+
+  } catch (error) {
+
+    console.log(error.message);
+
+  }
+
+};
+
+
+==============================================================================================   6. Login API Request Example
+
+
+const loginAPI = async (email, password) => {
+
+  try {
+
+    const res = await fetch("/api/login", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        email,
+        password
+      })
+
+    });
+
+    if (!res.ok) {
+      throw new Error("Invalid credentials");
+    }
+
+    const data = await res.json();
+
+    return data;
+
+  } catch (error) {
+
+    throw error.message;
+
+  }
+
+};
+
+==================================================================================                
+
+
+
+   
