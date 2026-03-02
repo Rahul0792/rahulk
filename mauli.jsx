@@ -2,117 +2,117 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
-  const [activePage, setActivePage] = useState("home");
+  const [page, setPage] = useState("home");
   const [devices, setDevices] = useState([]);
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     username: "",
     password: "",
     url: ""
   });
-  const [notification, setNotification] = useState(null);
-  const [error, setError] = useState(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  // Dummy Device List (You can replace with GET API)
   useEffect(() => {
     setDevices([
-      { id: 1, name: "Laptop", status: "Active" },
-      { id: 2, name: "Mobile", status: "Inactive" },
-      { id: 3, name: "Tablet", status: "Active" }
+      { id: 1, name: "Laptop" },
+      { id: 2, name: "Mobile" }
     ]);
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setNotification(null);
+    setMessage("");
+    setError("");
 
     try {
-      const response = await fetch(formData.url, {
+      const response = await fetch(form.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          username: formData.username,
-          password: formData.password
+          username: form.username,
+          password: form.password
         })
       });
 
       if (!response.ok) {
-        throw new Error("API request failed");
+        throw new Error("API Error");
       }
 
-      const data = await response.json();
+      await response.json();
 
-      setNotification("✅ Data submitted successfully!");
-      setDevices([...devices, { id: devices.length + 1, name: formData.username, status: "Active" }]);
+      setDevices([...devices, { id: devices.length + 1, name: form.username }]);
+      setMessage("Data submitted successfully");
+      setForm({ username: "", password: "", url: "" });
+
     } catch (err) {
-      setError("❌ " + err.message);
+      setError("Error: " + err.message);
     }
   };
 
   return (
     <div className="container">
       <nav className="navbar">
-        <h2>Device Manager</h2>
+        <h2>Device App</h2>
         <ul>
-          <li onClick={() => setActivePage("home")}>Home</li>
-          <li onClick={() => setActivePage("devices")}>Devices</li>
-          <li onClick={() => setActivePage("add")}>Add Device</li>
+          <li onClick={() => setPage("home")}>Home</li>
+          <li onClick={() => setPage("devices")}>Devices</li>
+          <li onClick={() => setPage("add")}>Add</li>
         </ul>
       </nav>
 
-      {notification && <div className="notification success">{notification}</div>}
-      {error && <div className="notification error">{error}</div>}
+      {message && <div className="success">{message}</div>}
+      {error && <div className="error">{error}</div>}
 
-      {activePage === "home" && (
+      {page === "home" && (
         <div className="card">
           <h3>Welcome</h3>
-          <p>This is a fully responsive React application.</p>
         </div>
       )}
 
-      {activePage === "devices" && (
+      {page === "devices" && (
         <div className="card">
           <h3>Device List</h3>
-          <ul className="device-list">
-            {devices.map((device) => (
-              <li key={device.id}>
-                {device.name} - {device.status}
-              </li>
+          <ul>
+            {devices.map((d) => (
+              <li key={d.id}>{d.name}</li>
             ))}
           </ul>
         </div>
       )}
 
-      {activePage === "add" && (
+      {page === "add" && (
         <div className="card">
-          <h3>Add Device (POST API)</h3>
+          <h3>Add Device</h3>
           <form onSubmit={handleSubmit}>
             <input
               type="text"
               name="username"
               placeholder="Username"
-              required
+              value={form.username}
               onChange={handleChange}
+              required
             />
             <input
               type="password"
               name="password"
               placeholder="Password"
-              required
+              value={form.password}
               onChange={handleChange}
+              required
             />
             <input
               type="text"
               name="url"
               placeholder="API URL"
-              required
+              value={form.url}
               onChange={handleChange}
+              required
             />
             <button type="submit">Submit</button>
           </form>
@@ -132,18 +132,18 @@ export default App;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
 }
 
 .container {
   min-height: 100vh;
-  background: #f4f6f9;
+  background: #f5f5f5;
 }
 
 .navbar {
-  background: #1e293b;
+  background: #1e3a8a;
   color: white;
-  padding: 15px 20px;
+  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -153,80 +153,55 @@ export default App;
 .navbar ul {
   list-style: none;
   display: flex;
-  gap: 20px;
+  gap: 15px;
 }
 
 .navbar li {
   cursor: pointer;
-  transition: 0.3s;
-}
-
-.navbar li:hover {
-  color: #38bdf8;
 }
 
 .card {
   background: white;
-  margin: 30px auto;
+  margin: 20px auto;
   padding: 20px;
   width: 90%;
-  max-width: 600px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-}
-
-.device-list {
-  list-style: none;
-  margin-top: 10px;
-}
-
-.device-list li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  max-width: 500px;
+  border-radius: 8px;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
 input {
-  padding: 10px;
-  border-radius: 5px;
+  padding: 8px;
+  border-radius: 4px;
   border: 1px solid #ccc;
 }
 
 button {
-  padding: 10px;
+  padding: 8px;
   background: #2563eb;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-.notification {
-  margin: 15px auto;
-  padding: 10px;
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
-  border-radius: 5px;
 }
 
 .success {
   background: #d1fae5;
-  color: #065f46;
+  padding: 10px;
+  text-align: center;
+  margin: 10px;
 }
 
 .error {
   background: #fee2e2;
-  color: #991b1b;
+  padding: 10px;
+  text-align: center;
+  margin: 10px;
 }
 
 /* Responsive */
@@ -238,11 +213,6 @@ button:hover {
 
   .navbar ul {
     flex-direction: column;
-    gap: 10px;
     margin-top: 10px;
-  }
-
-  .card {
-    width: 95%;
   }
 }
